@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>HemaHealth — Knowledge Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#C0392B;--red-dk:#7B241C;--red-lt:#FDECEA;
+  --grn:#1A7A3F;--grn-lt:#E9F7EF;
+  --dark:#12131A;--body:#3A3A4A;--sub:#8A8AA0;
+  --border:#E8E8F0;--bg:#F6F6FA;--white:#FFFFFF;
+  --amber:#C96A0A;--amber-bg:#FEF3E2;
+}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--dark);max-width:430px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:14px 20px;display:none;align-items:center;gap:12px;position:sticky;top:0;z-index:50}
+.topbar.show{display:flex}
+.logo-mark{width:28px;height:28px;border-radius:8px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0}
+.topbar-title{font-size:16px;font-weight:600;color:var(--dark);flex:1}
+.q-counter{font-size:12px;font-weight:600;color:var(--sub);white-space:nowrap}
+.progress-bar{height:4px;background:var(--border);display:none}
+.progress-bar.show{display:block}
+.progress-fill{height:100%;background:var(--red-dk);transition:width .4s ease}
+.screen{display:none;flex-direction:column;flex:1}
+.screen.active{display:flex}
+
+/* INTRO */
+.intro-hero{background:linear-gradient(135deg,#12131A,#1E1F32,#2A1A2E);padding:44px 24px 36px;position:relative;overflow:hidden}
+.intro-hero::before{content:'';position:absolute;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(192,57,43,.2) 0%,transparent 70%);top:-30px;right:-30px;pointer-events:none}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:22px;position:relative;z-index:1}
+.logo-name{font-family:'DM Serif Display',serif;font-size:18px;color:#fff}
+.intro-hero h1{font-family:'DM Serif Display',serif;font-size:24px;color:#fff;line-height:1.3;margin-bottom:8px;position:relative;z-index:1}
+.intro-hero p{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6;position:relative;z-index:1}
+.intro-body{padding:20px;flex:1;display:flex;flex-direction:column;gap:14px}
+.info-row{display:flex;gap:10px}
+.info-chip{flex:1;background:var(--white);border-radius:12px;padding:13px;text-align:center;border:1px solid var(--border)}
+.info-chip .num{font-family:'DM Serif Display',serif;font-size:26px;color:var(--red-dk);line-height:1}
+.info-chip .lbl{font-size:11px;color:var(--sub);margin-top:3px}
+.info-card{background:var(--white);border-radius:14px;border:1px solid var(--border);padding:16px}
+.info-card h3{font-size:14px;font-weight:600;color:var(--dark);margin-bottom:4px}
+.info-card p{font-size:13px;color:var(--sub);line-height:1.5}
+.btn-primary{background:var(--red-dk);color:#fff;border:none;border-radius:14px;padding:16px 24px;font-size:15px;font-weight:600;width:100%;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:auto}
+
+/* LEARN */
+.learn-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;display:flex;flex-direction:column;gap:14px}
+.sec-lbl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sub);margin-bottom:6px}
+.sec-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--dark);line-height:1.3}
+.sec-sub{font-size:13px;color:var(--sub);margin-top:4px}
+
+.cell-block{background:var(--white);border-radius:20px;border:1px solid var(--border);overflow:hidden}
+.canvas-wrap{position:relative;width:100%;height:240px;background:radial-gradient(ellipse at center,#140808 0%,#07070f 100%)}
+.canvas-wrap canvas{display:block;width:100%!important;height:100%!important}
+.cell-badge{position:absolute;top:12px;left:12px;padding:5px 14px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.cell-badge.g{background:#1A7A3F;color:#fff}
+.cell-badge.r{background:#7B1A1A;color:#fff}
+.cell-info{padding:16px 18px}
+.cell-info h3{font-size:16px;font-weight:700;color:var(--dark);margin-bottom:8px}
+.cell-info p{font-size:13px;line-height:1.75;color:var(--body)}
+.dyk{background:var(--amber-bg);border-radius:10px;padding:11px 13px;margin-top:12px}
+.dyk-lbl{font-size:10px;font-weight:700;color:var(--amber);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+.dyk p{font-size:12px;color:var(--body);font-style:italic;line-height:1.5}
+
+.cmp{background:var(--white);border-radius:16px;border:1px solid var(--border);overflow:hidden}
+.cmp-hd{padding:13px 18px;background:var(--dark)}
+.cmp-hd h3{font-family:'DM Serif Display',serif;font-size:16px;color:#fff}
+.cmp-rh{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--bg);border-bottom:1px solid var(--border)}
+.ch{padding:9px 12px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--sub)}
+.ch.g{color:var(--grn)}.ch.r{color:var(--red)}
+.cmp-row{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border)}
+.cmp-row:last-child{border-bottom:none}
+.cc{padding:10px 12px;font-size:12px;line-height:1.4}
+.cc.l{color:var(--sub);font-weight:600;font-size:11px;background:var(--bg)}
+.cc.h{color:var(--grn);font-weight:500}.cc.s{color:var(--red);font-weight:500}
+
+.learn-cta{padding:0 16px 20px}
+.btn-quiz{background:var(--red-dk);color:#fff;border:none;border-radius:14px;padding:16px 24px;font-size:15px;font-weight:600;width:100%;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* QUIZ */
+.quiz-body{padding:20px;flex:1;display:flex;flex-direction:column;gap:14px}
+.q-num{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--sub)}
+.q-txt{font-family:'DM Serif Display',serif;font-size:20px;color:var(--dark);line-height:1.35}
+.options{display:flex;flex-direction:column;gap:10px}
+.opt{border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;background:var(--white);cursor:pointer;transition:all .18s;text-align:left;width:100%;font-family:'DM Sans',sans-serif}
+.opt:hover:not(.locked){border-color:var(--red);background:var(--red-lt)}
+.opt-l{width:28px;height:28px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--sub);flex-shrink:0;transition:all .18s}
+.opt-t{font-size:14px;font-weight:500;color:var(--dark)}
+.opt.correct{border-color:var(--grn);background:var(--grn-lt)}
+.opt.correct .opt-l{background:var(--grn);color:#fff}
+.opt.correct .opt-t{color:var(--grn)}
+.opt.wrong{border-color:var(--red);background:var(--red-lt)}
+.opt.wrong .opt-l{background:var(--red);color:#fff}
+.opt.wrong .opt-t{color:var(--red)}
+.opt.locked{cursor:default}.opt.dimmed{opacity:.4}
+.fb{border-radius:12px;padding:13px 15px;display:none;animation:up .25s ease}
+.fb.c{background:var(--grn-lt);border:1px solid rgba(26,122,63,.2)}
+.fb.w{background:var(--red-lt);border:1px solid rgba(192,57,43,.2)}
+.fb p{font-size:13px;line-height:1.5}
+.fb.c p{color:var(--grn)}.fb.w p{color:var(--red-dk)}
+@keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.btn-next{background:var(--red-dk);color:#fff;border:none;border-radius:14px;padding:16px 24px;font-size:15px;font-weight:600;width:100%;cursor:pointer;font-family:'DM Sans',sans-serif;display:none;margin-top:auto}
+.btn-next.on{display:block;animation:up .2s ease}
+
+/* RESULTS */
+.res-hero{background:linear-gradient(135deg,#12131A,#1E1F32);padding:44px 24px 32px;text-align:center;position:relative;overflow:hidden}
+.res-hero::before{content:'';position:absolute;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(26,122,63,.2) 0%,transparent 70%);top:-40px;left:50%;transform:translateX(-50%);pointer-events:none}
+.score-ring{width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.08);border:3px solid rgba(255,255,255,.15);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 18px;position:relative;z-index:1}
+.score-n{font-family:'DM Serif Display',serif;font-size:38px;color:#fff;line-height:1}
+.score-t{font-size:12px;color:rgba(255,255,255,.4)}
+.res-hero h2{font-family:'DM Serif Display',serif;font-size:22px;color:#fff;margin-bottom:6px;position:relative;z-index:1}
+.res-hero p{font-size:13px;color:rgba(255,255,255,.5);position:relative;z-index:1}
+.res-body{padding:20px;display:flex;flex-direction:column;gap:12px}
+.res-item{background:var(--white);border-radius:14px;border:1px solid var(--border);padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.ri{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.ri.c{background:var(--grn-lt);color:var(--grn)}.ri.w{background:var(--red-lt);color:var(--red)}
+.rq{font-size:13px;font-weight:600;color:var(--dark);margin-bottom:3px;line-height:1.4}
+.ra{font-size:12px;color:var(--sub)}
+.ra .c{color:var(--grn);font-weight:600}.ra .w{color:var(--red);font-weight:600}
+.btn-retry{background:var(--red-dk);color:#fff;border:none;border-radius:14px;padding:16px 24px;font-size:15px;font-weight:600;width:100%;cursor:pointer;font-family:'DM Sans',sans-serif}
+</style>
+</head>
+<body>
+
+<div class="topbar" id="topbar">
+  <div class="logo-mark">H</div>
+  <span class="topbar-title" id="tb-title">Learn</span>
+  <span class="q-counter" id="tb-counter"></span>
+</div>
+<div class="progress-bar" id="prog-bar">
+  <div class="progress-fill" id="prog" style="width:0%"></div>
+</div>
+
+<!-- INTRO -->
+<div class="screen active" id="s-intro">
+  <div class="intro-hero">
+    <div class="logo"><div class="logo-mark">H</div><span class="logo-name">HemaHealth</span></div>
+    <h1>Sickle Cell Disease Quiz</h1>
+    <p>First, read a short overview with 3D cell models — then test your knowledge.</p>
+  </div>
+  <div class="intro-body">
+    <div class="info-row">
+      <div class="info-chip"><div class="num">2</div><div class="lbl">Sections</div></div>
+      <div class="info-chip"><div class="num">5</div><div class="lbl">Questions</div></div>
+      <div class="info-chip"><div class="num">~4</div><div class="lbl">Minutes</div></div>
+    </div>
+    <div class="info-card">
+      <h3>How it works</h3>
+      <p>Read educational information with interactive 3D cell models. Then answer 5 questions and get instant feedback.</p>
+    </div>
+    <button class="btn-primary" onclick="goLearn()">Start →</button>
+  </div>
+</div>
+
+<!-- LEARN -->
+<div class="screen" id="s-learn">
+  <div class="learn-scroll">
+    <div>
+      <div class="sec-lbl">Overview</div>
+      <div class="sec-title">Red Blood Cells:<br>Healthy vs Sickle</div>
+      <div class="sec-sub">Read this before the quiz.</div>
+    </div>
+
+    <div class="cell-block">
+      <div class="canvas-wrap"><canvas id="canvas-h"></canvas><span class="cell-badge g">Healthy Cell</span></div>
+      <div class="cell-info">
+        <h3>🩸 Healthy Red Blood Cell</h3>
+        <p>A healthy red blood cell is shaped like a <strong>round, flat disc</strong> — flexible enough to squeeze through even the tiniest blood vessels. Inside, it carries a protein called <strong>haemoglobin</strong>, which picks up oxygen in the lungs and delivers it to every part of the body. Each cell lives for about <strong>120 days</strong> before being naturally replaced.</p>
+        <div class="dyk"><div class="dyk-lbl">Did you know?</div><p>Your body produces around 2 million new red blood cells every second!</p></div>
+      </div>
+    </div>
+
+    <div class="cell-block">
+      <div class="canvas-wrap"><canvas id="canvas-s"></canvas><span class="cell-badge r">Sickle Cell</span></div>
+      <div class="cell-info">
+        <h3>⚠️ Sickle Cell</h3>
+        <p>A sickle cell is shaped like a <strong>crescent</strong> — rigid and unable to bend. This is caused by a change in a <strong>single gene</strong> inherited from both parents, which makes haemoglobin clump together. Sickle cells get stuck in blood vessels and block oxygen flow, causing <strong>pain crises</strong>. They also die in just <strong>10–20 days</strong>, leading to chronic anaemia.</p>
+        <div class="dyk"><div class="dyk-lbl">Did you know?</div><p>Just one tiny DNA change — out of 3 billion — causes this difference in cell shape.</p></div>
+      </div>
+    </div>
+
+    <div class="cmp">
+      <div class="cmp-hd"><h3>Side-by-Side Comparison</h3></div>
+      <div class="cmp-rh"><div class="ch"></div><div class="ch g">Healthy</div><div class="ch r">Sickle</div></div>
+      <div class="cmp-row"><div class="cc l">Shape</div><div class="cc h">Round disc</div><div class="cc s">Crescent</div></div>
+      <div class="cmp-row"><div class="cc l">Flexibility</div><div class="cc h">Very flexible</div><div class="cc s">Rigid, stiff</div></div>
+      <div class="cmp-row"><div class="cc l">Lifespan</div><div class="cc h">~120 days</div><div class="cc s">10–20 days</div></div>
+      <div class="cmp-row"><div class="cc l">Oxygen</div><div class="cc h">Delivers well</div><div class="cc s">Gets blocked</div></div>
+      <div class="cmp-row"><div class="cc l">Cause</div><div class="cc h">Normal gene</div><div class="cc s">Gene mutation</div></div>
+    </div>
+  </div>
+  <div class="learn-cta"><button class="btn-quiz" onclick="goQuiz()">I'm ready — Start Quiz →</button></div>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="s-quiz">
+  <div class="quiz-body">
+    <div class="q-num" id="q-num">Question 1</div>
+    <div class="q-txt" id="q-txt"></div>
+    <div class="options" id="opts"></div>
+    <div class="fb" id="fb"></div>
+    <button class="btn-next" id="btn-next" onclick="nextQ()">Next Question</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="s-res">
+  <div class="res-hero">
+    <div class="score-ring"><div class="score-n" id="sc-n">0</div><div class="score-t">out of 5</div></div>
+    <h2 id="res-title"></h2><p id="res-sub"></p>
+  </div>
+  <div class="res-body" id="res-body"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ── 3D GEOMETRY ──────────────────────────────────────
+function makeBiconcaveGeo() {
+  const points=[], N=80, R_MAX=1.5;
+  for(let i=0;i<=N;i++){
+    const t=i/N;
+    let r,sign;
+    if(t<=0.5){r=t*2*R_MAX;sign=-1;}else{r=(1-t)*2*R_MAX;sign=1;}
+    const rn=r/R_MAX;
+    const h=0.12*(1-rn*rn)+0.55*rn*rn*(1-rn*rn)+0.30*Math.pow(rn,4)*(1-rn*rn);
+    points.push(new THREE.Vector2(r,sign*Math.max(0.015,h)));
+  }
+  return new THREE.LatheGeometry(points,128);
+}
+
+function makeSickleGeo() {
+  const tubeSegs=160,radSegs=24,curvePts=[];
+  for(let i=0;i<=tubeSegs;i++){
+    const t=i/tubeSegs,angle=t*Math.PI*0.92,R=1.75;
+    curvePts.push(new THREE.Vector3(R*Math.sin(angle)-0.85,-R*Math.cos(angle)+R-0.55,Math.sin(t*Math.PI)*0.15));
+  }
+  const curve=new THREE.CatmullRomCurve3(curvePts);
+  const frames=curve.computeFrenetFrames(tubeSegs,false);
+  const verts=[],norms=[],uvsArr=[],idxArr=[];
+  for(let i=0;i<=tubeSegs;i++){
+    const t=i/tubeSegs,pt=curve.getPoint(t);
+    const N=frames.normals[Math.min(i,frames.normals.length-1)];
+    const B=frames.binormals[Math.min(i,frames.binormals.length-1)];
+    const radius=0.30*Math.pow(Math.sin(t*Math.PI),0.5)+0.025;
+    for(let j=0;j<=radSegs;j++){
+      const phi=(j/radSegs)*Math.PI*2,c=Math.cos(phi),s=Math.sin(phi);
+      const nx=c*N.x+s*B.x,ny=c*N.y+s*B.y,nz=c*N.z+s*B.z;
+      verts.push(pt.x+nx*radius,pt.y+ny*radius,pt.z+nz*radius);
+      norms.push(nx,ny,nz);uvsArr.push(t,j/radSegs);
+    }
+  }
+  for(let i=0;i<tubeSegs;i++)for(let j=0;j<radSegs;j++){const a=i*(radSegs+1)+j,b=a+radSegs+1;idxArr.push(a,b,a+1,b,b+1,a+1);}
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));
+  geo.setAttribute('normal',new THREE.Float32BufferAttribute(norms,3));
+  geo.setAttribute('uv',new THREE.Float32BufferAttribute(uvsArr,2));
+  geo.setIndex(idxArr);geo.computeVertexNormals();
+  return geo;
+}
+
+function buildCell(canvasId,type,H) {
+  const canvas=document.getElementById(canvasId);
+  if(!canvas)return;
+  const W=canvas.parentElement.clientWidth||360;
+  canvas.width=W*devicePixelRatio;canvas.height=H*devicePixelRatio;
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  renderer.setPixelRatio(devicePixelRatio);renderer.setSize(W,H);
+  renderer.setClearColor(0x000000,0);
+  renderer.physicallyCorrectLights=true;
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.2;
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(36,W/H,0.1,100);
+  camera.position.set(0,1.2,5.8);camera.lookAt(0,0,0);
+  scene.add(new THREE.AmbientLight(0x200808,3.5));
+  const top=new THREE.DirectionalLight(0xffd0b0,1.8);top.position.set(3,7,5);scene.add(top);
+  const side=new THREE.DirectionalLight(0x110022,1.2);side.position.set(-5,1,2);scene.add(side);
+  const back=new THREE.DirectionalLight(0xff2200,0.5);back.position.set(0,-4,-5);scene.add(back);
+  const pt=new THREE.PointLight(0xbb1100,1.0,14);pt.position.set(1.5,2,4);scene.add(pt);
+  const mat=new THREE.MeshStandardMaterial({color:type==='h'?0x8B0000:0x6B0000,roughness:0.85,metalness:0.0,side:THREE.DoubleSide});
+  let mesh;
+  if(type==='h'){mesh=new THREE.Mesh(makeBiconcaveGeo(),mat);mesh.rotation.x=0.35;}
+  else{mesh=new THREE.Mesh(makeSickleGeo(),mat);mesh.position.set(0.1,-0.15,0);}
+  scene.add(mesh);
+  const pPos=new Float32Array(90*3);
+  for(let i=0;i<90;i++){pPos[i*3]=(Math.random()-.5)*8;pPos[i*3+1]=(Math.random()-.5)*7;pPos[i*3+2]=(Math.random()-.5)*4-2;}
+  const pGeo=new THREE.BufferGeometry();
+  pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3));
+  const pMesh=new THREE.Points(pGeo,new THREE.PointsMaterial({color:0x770000,size:0.05,transparent:true,opacity:0.3}));
+  scene.add(pMesh);
+  let time=Math.random()*100;
+  (function loop(){
+    requestAnimationFrame(loop);time+=0.008;
+    mesh.rotation.y+=0.005;mesh.position.y=Math.sin(time)*0.12;
+    if(type==='h')mesh.rotation.x=0.35+Math.sin(time*0.4)*0.2;
+    else{mesh.rotation.x=Math.sin(time*0.5)*0.1;mesh.rotation.z=Math.sin(time*0.35)*0.05;}
+    pMesh.rotation.y+=0.001;
+    renderer.render(scene,camera);
+  })();
+}
+
+// ── QUIZ LOGIC ────────────────────────────────────────
+const Qs=[
+  {q:"What protein inside red blood cells carries oxygen?",
+   opts:["Insulin","Haemoglobin","Keratin","Collagen"],ans:1,
+   fb:{c:"✓ Correct! Haemoglobin picks up oxygen in the lungs and carries it to every cell in the body.",
+       w:"Not quite. The answer is Haemoglobin — the protein inside red blood cells that carries oxygen."}},
+  {q:"What shape does a healthy red blood cell have?",
+   opts:["Crescent / sickle","Sphere","Round flat disc","Cube"],ans:2,
+   fb:{c:"✓ Correct! Healthy red blood cells are round flat discs — flexible enough to pass through narrow vessels.",
+       w:"Not quite. Healthy red blood cells are round flat discs, which makes them very flexible."}},
+  {q:"Why do sickle cells block blood vessels?",
+   opts:["They are too small","They carry too much oxygen","They are rigid and crescent-shaped","They move too fast"],ans:2,
+   fb:{c:"✓ Correct! Sickle cells are stiff and crescent-shaped, so they cannot flex through narrow blood vessels.",
+       w:"Not quite. Sickle cells block vessels because they are rigid and crescent-shaped — unable to bend."}},
+  {q:"How long does a sickle cell survive compared to a healthy one?",
+   opts:["The same — 120 days","Longer — about 200 days","Shorter — only 10 to 20 days","Half — about 60 days"],ans:2,
+   fb:{c:"✓ Correct! Sickle cells only live 10–20 days vs 120 days for healthy cells, causing constant anaemia.",
+       w:"Not quite. Sickle cells survive only 10–20 days, far less than the 120 days of healthy red blood cells."}},
+  {q:"What causes sickle cell disease?",
+   opts:["A viral infection","A single gene mutation inherited from both parents","A vitamin deficiency","Too much iron in the blood"],ans:1,
+   fb:{c:"✓ Correct! Sickle cell disease is caused by inheriting one specific mutated gene from each parent.",
+       w:"Not quite. Sickle cell disease is caused by a single gene mutation inherited from both parents."}}
+];
+
+let cur=0,sc=0,ans=[],done=false;
+const TOTAL=Qs.length;
+let cellsBuilt=false;
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function setTop(visible,title,counter){
+  const t=document.getElementById('topbar');
+  t.classList.toggle('show',visible);
+  if(visible){document.getElementById('tb-title').textContent=title;document.getElementById('tb-counter').textContent=counter||'';}
+}
+
+function goLearn(){
+  show('s-learn');setTop(true,'Learn','');
+  document.getElementById('prog-bar').classList.remove('show');
+  if(!cellsBuilt){
+    cellsBuilt=true;
+    setTimeout(()=>{buildCell('canvas-h','h',240);buildCell('canvas-s','s',240);},80);
+  }
+}
+
+function goQuiz(){
+  cur=0;sc=0;ans=[];done=false;
+  show('s-quiz');setTop(true,'Knowledge Quiz','');
+  document.getElementById('prog-bar').classList.add('show');
+  loadQ();
+}
+
+function loadQ(){
+  done=false;
+  const q=Qs[cur];
+  document.getElementById('tb-counter').textContent=`${cur+1} / ${TOTAL}`;
+  document.getElementById('q-num').textContent=`Question ${cur+1}`;
+  document.getElementById('q-txt').textContent=q.q;
+  document.getElementById('prog').style.width=`${((cur+1)/TOTAL)*100}%`;
+  document.getElementById('fb').style.display='none';
+  document.getElementById('fb').className='fb';
+  const btn=document.getElementById('btn-next');
+  btn.className='btn-next';
+  btn.textContent=cur<TOTAL-1?'Next Question':'See Results';
+  const opts=document.getElementById('opts');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';
+    b.innerHTML=`<div class="opt-l">${['A','B','C','D'][i]}</div><span class="opt-t">${o}</span>`;
+    b.onclick=()=>pick(i);
+    opts.appendChild(b);
+  });
+}
+
+function pick(idx){
+  if(done)return;done=true;
+  const q=Qs[cur],ok=idx===q.ans;
+  document.querySelectorAll('.opt').forEach((o,i)=>{
+    o.classList.add('locked');
+    if(i===q.ans)o.classList.add('correct');
+    else if(i===idx&&!ok)o.classList.add('wrong');
+    else o.classList.add('dimmed');
+  });
+  const fb=document.getElementById('fb');
+  fb.className=`fb ${ok?'c':'w'}`;
+  fb.innerHTML=`<p>${ok?q.fb.c:q.fb.w}</p>`;
+  fb.style.display='block';
+  if(ok)sc++;
+  ans.push({idx,ok});
+  document.getElementById('btn-next').className='btn-next on';
+}
+
+function nextQ(){cur++;if(cur>=TOTAL)showRes();else loadQ();}
+
+function showRes(){
+  show('s-res');setTop(false);
+  document.getElementById('prog-bar').classList.remove('show');
+  document.getElementById('sc-n').textContent=sc;
+  const t=['Keep studying!','Keep going!','Good effort!','Well done!','Great job!','Perfect score!'];
+  const s=['Review the overview and try again.','A few more tries and you\'ll get it!','You\'re getting there!','Good understanding of sickle cell disease!','Great knowledge of sickle cell disease!','You know sickle cell disease really well!'];
+  document.getElementById('res-title').textContent=t[sc]||'Well done!';
+  document.getElementById('res-sub').textContent=s[sc]||'';
+  const body=document.getElementById('res-body');body.innerHTML='';
+  Qs.forEach((q,i)=>{
+    const a=ans[i],d=document.createElement('div');d.className='res-item';
+    d.innerHTML=`<div class="ri ${a.ok?'c':'w'}">${a.ok?'✓':'✗'}</div><div><div class="rq">${q.q}</div><div class="ra">Your answer: <span class="${a.ok?'c':'w'}">${q.opts[a.idx]}</span>${!a.ok?` · Correct: <span class="c">${q.opts[q.ans]}</span>`:''}</div></div>`;
+    body.appendChild(d);
+  });
+  const btn=document.createElement('button');btn.className='btn-retry';btn.textContent='Try Again';btn.onclick=goLearn;body.appendChild(btn);
+}
+</script>
+</body>
+</html>
