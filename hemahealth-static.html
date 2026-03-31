@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>HemaHealth — Sickle Cell Disease</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#C0392B;--red-dk:#7B241C;--red-lt:#FDECEA;
+  --grn:#1A7A3F;--grn-lt:#E9F7EF;
+  --dark:#12131A;--body:#3A3A4A;--sub:#8A8AA0;
+  --border:#E8E8F0;--bg:#F6F6FA;--white:#FFFFFF;
+  --amber:#C96A0A;--amber-bg:#FEF3E2;
+}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--dark);max-width:430px;margin:0 auto;min-height:100vh}
+.hero{background:linear-gradient(135deg,#12131A,#1E1F32,#2A1A2E);padding:44px 24px 36px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(192,57,43,.22) 0%,transparent 70%);top:-40px;right:-40px;pointer-events:none}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:24px;position:relative;z-index:1}
+.logo-mark{width:32px;height:32px;border-radius:9px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff}
+.logo-name{font-family:'DM Serif Display',serif;font-size:18px;color:#fff}
+.hero h1{font-family:'DM Serif Display',serif;font-size:26px;color:#fff;line-height:1.25;margin-bottom:8px;position:relative;z-index:1}
+.hero p{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6;position:relative;z-index:1}
+
+.content{padding:16px}
+.cell-block{background:var(--white);border-radius:20px;border:1px solid var(--border);overflow:hidden;margin-bottom:16px}
+.canvas-wrap{position:relative;width:100%;height:260px;background:radial-gradient(ellipse at center,#140808 0%,#07070f 100%)}
+.canvas-wrap canvas{display:block;width:100%!important;height:100%!important}
+.cell-badge{position:absolute;top:12px;left:12px;padding:5px 14px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.cell-badge.g{background:#1A7A3F;color:#fff}
+.cell-badge.r{background:#7B1A1A;color:#fff}
+.cell-info{padding:18px 20px}
+.cell-info h2{font-size:17px;font-weight:700;color:var(--dark);margin-bottom:10px}
+.cell-info p{font-size:13px;line-height:1.75;color:var(--body)}
+.dyk{background:var(--amber-bg);border-radius:12px;padding:12px 14px;margin-top:14px}
+.dyk-lbl{font-size:10px;font-weight:700;color:var(--amber);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+.dyk p{font-size:12px;color:var(--body);font-style:italic;line-height:1.5}
+
+.cmp{background:var(--white);border-radius:20px;border:1px solid var(--border);overflow:hidden;margin-bottom:16px}
+.cmp-hd{padding:16px 20px;background:var(--dark)}
+.cmp-hd h2{font-family:'DM Serif Display',serif;font-size:18px;color:#fff}
+.cmp-rh{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--bg);border-bottom:1px solid var(--border)}
+.ch{padding:10px 12px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--sub)}
+.ch.g{color:var(--grn)}.ch.r{color:var(--red)}
+.cmp-row{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border)}
+.cmp-row:last-child{border-bottom:none}
+.cc{padding:11px 12px;font-size:12px;line-height:1.4}
+.cc.l{color:var(--sub);font-weight:600;font-size:11px;background:var(--bg)}
+.cc.h{color:var(--grn);font-weight:500}.cc.s{color:var(--red);font-weight:500}
+
+.facts{background:var(--white);border-radius:20px;border:1px solid var(--border);overflow:hidden;margin-bottom:24px}
+.facts-hd{padding:16px 20px;background:var(--dark)}
+.facts-hd h2{font-family:'DM Serif Display',serif;font-size:18px;color:#fff}
+.fact{display:flex;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:flex-start}
+.fact:last-child{border-bottom:none}
+.fact-icon{width:38px;height:38px;border-radius:11px;background:var(--red-lt);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.fact-txt h3{font-size:14px;font-weight:600;color:var(--dark);margin-bottom:2px}
+.fact-txt p{font-size:13px;color:var(--body);line-height:1.5}
+.footer{padding:20px 24px;text-align:center;border-top:1px solid var(--border)}
+.footer p{font-size:12px;color:var(--sub);line-height:1.6}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="logo"><div class="logo-mark">H</div><span class="logo-name">HemaHealth</span></div>
+  <h1>Understanding Sickle Cell Disease</h1>
+  <p>Learn how sickle cell disease affects red blood cells and the body.</p>
+</div>
+
+<div class="content">
+
+  <div class="cell-block">
+    <div class="canvas-wrap"><canvas id="canvas-h"></canvas><span class="cell-badge g">Healthy Cell</span></div>
+    <div class="cell-info">
+      <h2>🩸 Healthy Red Blood Cell</h2>
+      <p>A healthy red blood cell is shaped like a <strong>round, flat disc</strong> — flexible enough to squeeze through even the tiniest blood vessels. Inside, it carries a protein called <strong>haemoglobin</strong>, which picks up oxygen in the lungs and delivers it to every part of the body. Each cell lives for about <strong>120 days</strong> before being naturally replaced by the bone marrow.</p>
+      <div class="dyk"><div class="dyk-lbl">Did you know?</div><p>Your body produces around 2 million new red blood cells every second!</p></div>
+    </div>
+  </div>
+
+  <div class="cell-block">
+    <div class="canvas-wrap"><canvas id="canvas-s"></canvas><span class="cell-badge r">Sickle Cell</span></div>
+    <div class="cell-info">
+      <h2>⚠️ Sickle Cell</h2>
+      <p>A sickle cell is shaped like a <strong>crescent or sickle</strong> — rigid and unable to bend. This shape is caused by a change in a <strong>single gene</strong> inherited from both parents, which makes haemoglobin clump together. Because sickle cells are stiff, they get stuck in blood vessels and block oxygen flow, causing <strong>pain crises</strong>. They also die much faster — only <strong>10–20 days</strong> — leading to chronic anaemia.</p>
+      <div class="dyk"><div class="dyk-lbl">Did you know?</div><p>Just one tiny DNA change — out of 3 billion — is enough to cause this difference in cell shape.</p></div>
+    </div>
+  </div>
+
+  <div class="cmp">
+    <div class="cmp-hd"><h2>Side-by-Side Comparison</h2></div>
+    <div class="cmp-rh"><div class="ch"></div><div class="ch g">Healthy</div><div class="ch r">Sickle</div></div>
+    <div class="cmp-row"><div class="cc l">Shape</div><div class="cc h">Round disc</div><div class="cc s">Crescent</div></div>
+    <div class="cmp-row"><div class="cc l">Flexibility</div><div class="cc h">Very flexible</div><div class="cc s">Rigid, stiff</div></div>
+    <div class="cmp-row"><div class="cc l">Lifespan</div><div class="cc h">~120 days</div><div class="cc s">10–20 days</div></div>
+    <div class="cmp-row"><div class="cc l">Oxygen</div><div class="cc h">Delivers well</div><div class="cc s">Gets blocked</div></div>
+    <div class="cmp-row"><div class="cc l">Cause</div><div class="cc h">Normal gene</div><div class="cc s">Gene mutation</div></div>
+  </div>
+
+  <div class="facts">
+    <div class="facts-hd"><h2>Key Facts</h2></div>
+    <div class="fact"><div class="fact-icon">🧬</div><div class="fact-txt"><h3>Genetic Condition</h3><p>A child must receive the mutated gene from both parents to develop sickle cell disease.</p></div></div>
+    <div class="fact"><div class="fact-icon">😣</div><div class="fact-txt"><h3>Pain Crises</h3><p>Sickle cells block blood vessels causing sudden severe pain episodes lasting hours or days.</p></div></div>
+    <div class="fact"><div class="fact-icon">🩺</div><div class="fact-txt"><h3>Anaemia</h3><p>Because sickle cells die so quickly, the body struggles to maintain enough red blood cells.</p></div></div>
+    <div class="fact"><div class="fact-icon">💊</div><div class="fact-txt"><h3>Management</h3><p>Treatments including medication and bone marrow transplants can help manage symptoms.</p></div></div>
+  </div>
+
+</div>
+
+<div class="footer"><p><strong>HemaHealth</strong><br>Educational content for research purposes only.</p></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+function makeBiconcaveGeo() {
+  const points = [];
+  const N = 80;
+  const R_MAX = 1.5;
+  for (let i = 0; i <= N; i++) {
+    const t = i / N;
+    let r, sign;
+    if (t <= 0.5) { r = t * 2 * R_MAX; sign = -1; }
+    else { r = (1 - t) * 2 * R_MAX; sign = 1; }
+    const rn = r / R_MAX;
+    const a=0.12, b=0.55, c=0.30;
+    const h = a*(1-rn*rn) + b*rn*rn*(1-rn*rn) + c*Math.pow(rn,4)*(1-rn*rn);
+    const y = sign * Math.max(0.015, h);
+    if (r >= 0) points.push(new THREE.Vector2(r, y));
+  }
+  return new THREE.LatheGeometry(points, 128);
+}
+
+function makeSickleGeo() {
+  const tubeSegs=160, radSegs=24;
+  const curvePts=[];
+  for(let i=0;i<=tubeSegs;i++){
+    const t=i/tubeSegs, angle=t*Math.PI*0.92, R=1.75;
+    curvePts.push(new THREE.Vector3(R*Math.sin(angle)-0.85,-R*Math.cos(angle)+R-0.55,Math.sin(t*Math.PI)*0.15));
+  }
+  const curve=new THREE.CatmullRomCurve3(curvePts);
+  const frames=curve.computeFrenetFrames(tubeSegs,false);
+  const verts=[],norms=[],uvsArr=[],idxArr=[];
+  for(let i=0;i<=tubeSegs;i++){
+    const t=i/tubeSegs, pt=curve.getPoint(t);
+    const N=frames.normals[Math.min(i,frames.normals.length-1)];
+    const B=frames.binormals[Math.min(i,frames.binormals.length-1)];
+    const radius=0.30*Math.pow(Math.sin(t*Math.PI),0.5)+0.025;
+    for(let j=0;j<=radSegs;j++){
+      const phi=(j/radSegs)*Math.PI*2,c=Math.cos(phi),s=Math.sin(phi);
+      const nx=c*N.x+s*B.x,ny=c*N.y+s*B.y,nz=c*N.z+s*B.z;
+      verts.push(pt.x+nx*radius,pt.y+ny*radius,pt.z+nz*radius);
+      norms.push(nx,ny,nz); uvsArr.push(t,j/radSegs);
+    }
+  }
+  for(let i=0;i<tubeSegs;i++) for(let j=0;j<radSegs;j++){const a=i*(radSegs+1)+j,b=a+radSegs+1;idxArr.push(a,b,a+1,b,b+1,a+1);}
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));
+  geo.setAttribute('normal',new THREE.Float32BufferAttribute(norms,3));
+  geo.setAttribute('uv',new THREE.Float32BufferAttribute(uvsArr,2));
+  geo.setIndex(idxArr); geo.computeVertexNormals();
+  return geo;
+}
+
+function buildScene(canvasId, type) {
+  const canvas=document.getElementById(canvasId);
+  const wrap=canvas.parentElement;
+  const W=wrap.clientWidth, H=260;
+  canvas.width=W*devicePixelRatio; canvas.height=H*devicePixelRatio;
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  renderer.setPixelRatio(devicePixelRatio); renderer.setSize(W,H);
+  renderer.setClearColor(0x000000,0);
+  renderer.physicallyCorrectLights=true;
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.2;
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(36,W/H,0.1,100);
+  camera.position.set(0,1.2,5.8); camera.lookAt(0,0,0);
+  scene.add(new THREE.AmbientLight(0x200808,3.5));
+  const top=new THREE.DirectionalLight(0xffd0b0,1.8); top.position.set(3,7,5); scene.add(top);
+  const side=new THREE.DirectionalLight(0x110022,1.2); side.position.set(-5,1,2); scene.add(side);
+  const back=new THREE.DirectionalLight(0xff2200,0.5); back.position.set(0,-4,-5); scene.add(back);
+  const pt=new THREE.PointLight(0xbb1100,1.0,14); pt.position.set(1.5,2,4); scene.add(pt);
+  const mat=new THREE.MeshStandardMaterial({color:type==='h'?0x8B0000:0x6B0000,roughness:0.85,metalness:0.0,side:THREE.DoubleSide});
+  let mesh;
+  if(type==='h'){mesh=new THREE.Mesh(makeBiconcaveGeo(),mat);mesh.rotation.x=0.35;}
+  else{mesh=new THREE.Mesh(makeSickleGeo(),mat);mesh.position.set(0.1,-0.15,0);}
+  scene.add(mesh);
+  const pPos=new Float32Array(90*3);
+  for(let i=0;i<90;i++){pPos[i*3]=(Math.random()-.5)*8;pPos[i*3+1]=(Math.random()-.5)*7;pPos[i*3+2]=(Math.random()-.5)*4-2;}
+  const pGeo=new THREE.BufferGeometry();
+  pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3));
+  const pMesh=new THREE.Points(pGeo,new THREE.PointsMaterial({color:0x770000,size:0.05,transparent:true,opacity:0.3}));
+  scene.add(pMesh);
+  let time=Math.random()*100;
+  (function loop(){
+    requestAnimationFrame(loop); time+=0.008;
+    mesh.rotation.y+=0.005;
+    mesh.position.y=Math.sin(time)*0.12;
+    if(type==='h') mesh.rotation.x=0.35+Math.sin(time*0.4)*0.2;
+    else{mesh.rotation.x=Math.sin(time*0.5)*0.1;mesh.rotation.z=Math.sin(time*0.35)*0.05;}
+    pMesh.rotation.y+=0.001;
+    renderer.render(scene,camera);
+  })();
+}
+
+window.addEventListener('load',()=>{buildScene('canvas-h','h');buildScene('canvas-s','s');});
+</script>
+</body>
+</html>
